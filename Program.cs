@@ -14,7 +14,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://example.com",
                     "http://www.contoso.com",
-                    "http://localhost:7051",
+                    "http://localhost:5173",
                     "http://localhost:3000")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 const string connStr = @"Data Source=DESKTOP-1HV37H6\SQLEXPRESS;Initial Catalog=ShoppingList;Integrated Security=True;Connect Timeout=30;Encrypt=False";
+const string connStrToDo = @"Data Source=DESKTOP-1HV37H6\SQLEXPRESS;Initial Catalog=Todo;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
 app.UseCors(allowedOrigins);
 
 // Configure the HTTP request pipeline.
@@ -39,7 +40,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+//Shoppinglist Application Del
 
 app.MapGet("/shoppingList", async () =>
 {
@@ -72,6 +73,44 @@ app.MapDelete("/shoppingList/{id}", async (Guid id) =>
     var rowsAffected = await connection.ExecuteAsync(SQL, new { id = id });
     return rowsAffected;
 });
+
+
+//Todo Application Del
+
+app.MapGet("/Todo", async () =>
+{
+    var connection = new SqlConnection(connStrToDo);
+    const string SQL = "select id, Text, Done FROM Todo";
+    var TodoItems = await connection.QueryAsync<TodoItem>(SQL);
+    return TodoItems;
+});
+
+app.MapPost("/Todo", async (TodoItem todoItem) =>
+{
+    var connection = new SqlConnection(connStrToDo);
+    const string SQL = "INSERT INTO Todo (Id, Text) VALUES (@Id, @Text)";
+    var rowsAffected = await connection.ExecuteAsync(SQL, todoItem);
+    return rowsAffected;
+});
+
+app.MapPut("/Todo", async (TodoItem todoItem) =>
+{
+    var connection = new SqlConnection(connStrToDo);
+    const string SQL = "UPDATE Todo SET Text = @Text WHERE Id = @Id";
+    var rowsAffected = await connection.ExecuteAsync(SQL, todoItem);
+    return rowsAffected;
+});
+
+app.MapDelete("/Todo/{id}", async (Guid id) =>
+{
+    var connection = new SqlConnection(connStrToDo);
+    const string SQL = "DELETE FROM Todo WHERE id = @id";
+    var rowsAffected = await connection.ExecuteAsync(SQL, new { id = id });
+    return rowsAffected;
+});
+
+
+
 
 app.UseStaticFiles();
 app.Run();
