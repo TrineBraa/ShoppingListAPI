@@ -10,15 +10,18 @@ CREATE TABLE [dbo].[shoppingList](
 ) ON [PRIMARY]
 
 
-USE [Todo]
+USE [TodoList]
 
-CREATE TABLE [dbo].[Todo](
-	[Id] [uniqueidentifier] NOT NULL,
-	[Text] [nvarchar](max) NOT NULL,
+
+CREATE TABLE [dbo].[todoList](
+	[id] [uniqueidentifier] NOT NULL,
+	[Task] [nvarchar](max) NOT NULL,
 	[Done] [date] NULL,
- CONSTRAINT [PK_Todo] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_todoList] PRIMARY KEY CLUSTERED 
 (
-	[Id] ASC
+	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+
 

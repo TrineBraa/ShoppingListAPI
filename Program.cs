@@ -1,6 +1,9 @@
+using System;
 using System.Data.SqlClient;
 using Dapper;
 using ShoppingList.Model;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var allowedOrigins = "_allowOrigins";
 
@@ -14,6 +17,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://example.com",
                     "http://www.contoso.com",
+                    "http://localhost:5174",
                     "http://localhost:5173",
                     "http://localhost:3000")
                 .AllowAnyHeader()
@@ -27,7 +31,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 const string connStr = @"Data Source=DESKTOP-1HV37H6\SQLEXPRESS;Initial Catalog=ShoppingList;Integrated Security=True;Connect Timeout=30;Encrypt=False";
-const string connStrToDo = @"Data Source=DESKTOP-1HV37H6\SQLEXPRESS;Initial Catalog=Todo;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
+const string connStrToDo = @"Data Source=DESKTOP-1HV37H6\SQLEXPRESS; Initial Catalog = TodoList; Integrated Security = True; Connect Timeout = 30; Encrypt = False;";
 app.UseCors(allowedOrigins);
 
 // Configure the HTTP request pipeline.
@@ -80,31 +84,31 @@ app.MapDelete("/shoppingList/{id}", async (Guid id) =>
 app.MapGet("/Todo", async () =>
 {
     var connection = new SqlConnection(connStrToDo);
-    const string SQL = "select id, Text, Done FROM Todo";
-    var TodoItems = await connection.QueryAsync<TodoItem>(SQL);
+    const string SQL = "select id, Task, Done FROM TodoList";
+    var TodoItems = await connection.QueryAsync<TodoTask>(SQL);
     return TodoItems;
 });
 
-app.MapPost("/Todo", async (TodoItem todoItem) =>
+app.MapPost("/Todo", async (TodoTask todoTask) =>
 {
     var connection = new SqlConnection(connStrToDo);
-    const string SQL = "INSERT INTO Todo (Id, Text) VALUES (@Id, @Text)";
-    var rowsAffected = await connection.ExecuteAsync(SQL, todoItem);
+    const string SQL = "INSERT INTO TodoList (Id, Task) VALUES (@Id, @Task)";
+    var rowsAffected = await connection.ExecuteAsync(SQL, todoTask);
     return rowsAffected;
 });
 
-app.MapPut("/Todo", async (TodoItem todoItem) =>
+app.MapPut("/Todo", async (TodoTask todoTask) =>
 {
     var connection = new SqlConnection(connStrToDo);
-    const string SQL = "UPDATE Todo SET Text = @Text WHERE Id = @Id";
-    var rowsAffected = await connection.ExecuteAsync(SQL, todoItem);
+    const string SQL = "UPDATE TodoList SET Task = @Task WHERE Id = @Id";
+    var rowsAffected = await connection.ExecuteAsync(SQL, todoTask);
     return rowsAffected;
 });
 
 app.MapDelete("/Todo/{id}", async (Guid id) =>
 {
     var connection = new SqlConnection(connStrToDo);
-    const string SQL = "DELETE FROM Todo WHERE id = @id";
+    const string SQL = "DELETE FROM TodoList WHERE id = @id";
     var rowsAffected = await connection.ExecuteAsync(SQL, new { id = id });
     return rowsAffected;
 });

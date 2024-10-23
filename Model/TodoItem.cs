@@ -1,17 +1,17 @@
 ﻿namespace ShoppingList.Model
 {
-    public class TodoItem
+    public class TodoTask
     {
         public Guid Id { get; set; }
-        public string Text { get; set; }
+        public string Task { get; set; }
         public DateTime? Done { get; set; }
 
-        public TodoItem(string text) : this()
+        public TodoTask(string task) : this()
         {
-            Text = text;
+            Task = task;
         }
 
-        public TodoItem()
+        public TodoTask()
         {
             Id = Guid.NewGuid();
         }
